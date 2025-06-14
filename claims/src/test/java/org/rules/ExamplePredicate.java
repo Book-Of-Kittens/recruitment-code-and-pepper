@@ -6,9 +6,10 @@ import java.util.function.Predicate;
 
 public class ExamplePredicate implements UpdatablePredicate {
     int dailyClaims = 0;
+
     @Override
     public Predicate<Claim> getPredicate() {
-        return claim -> dailyClaims<5;
+        return claim -> dailyClaims < 5;
     }
 
     @Override

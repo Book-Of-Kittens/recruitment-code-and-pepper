@@ -1,12 +1,11 @@
 package org.engine;
 
-import org.claims.Claim;
-import org.claims.ClaimsOrderingService;
-import org.claims.InMemoryClaimsOrderingService;
-import org.claims.SampleFromFile;
+import org.claims.*;
 import org.resources.InMemoryResourcesService;
-import org.resources.ResourcesService;
-import org.rules.*;
+import org.rules.ApprovalService;
+import org.rules.ExamplePredicate;
+import org.rules.NoDuplicateIdPredicate;
+import org.rules.UpdatablePredicate;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,8 +13,8 @@ import java.util.Map;
 
 public class EngineTestConfiguration {
 
-    public static Engine getEngine(){
-        return new Engine(orderingService(), approvalService());
+    public static ClaimProcessingService getEngine() {
+        return new ClaimProcessingService(orderingService(), approvalService());
     }
 
     private static ClaimsOrderingService orderingService() {
@@ -24,17 +23,17 @@ public class EngineTestConfiguration {
         return service;
     }
 
-    private static Map<String, Comparator<Claim>> comparatorsByType(){
-        return Map.of(ClaimType.MEDICAL.name(), Comparator.comparing(Claim::id),
-                ClaimType.PROPERTY.name(), Comparator.comparing(Claim::id),
-                ClaimType.VEHICLE.name(), Comparator.comparing(Claim::id));
+    private static Map<ClaimType, Comparator<Claim>> comparatorsByType() {
+        return Map.of(ClaimType.MEDICAL, Comparator.comparing(Claim::id),
+                ClaimType.PROPERTY, Comparator.comparing(Claim::id),
+                ClaimType.VEHICLE, Comparator.comparing(Claim::id));
     }
 
-    private static List<UpdatablePredicate> examplePredicate(){
+    private static List<UpdatablePredicate> examplePredicate() {
         return List.of(new ExamplePredicate(), new NoDuplicateIdPredicate(new InMemoryResourcesService()));
     }
 
-    private static ApprovalService approvalService(){
+    private static ApprovalService approvalService() {
         return new ApprovalService(examplePredicate());
     }
 

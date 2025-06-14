@@ -13,16 +13,17 @@ public class ApprovalService {
         this.predicates = predicates;
     }
 
-    public boolean shouldProcess(Claim claim){
+    public boolean shouldProcess(Claim claim) {
         Optional<UpdatablePredicate> failingPredicate = predicates.stream()
                 .filter(predicate -> !predicate.getPredicate().test(claim)).findAny();
         return failingPredicate.isEmpty();
     }
 
-    public void updatePredicates(Claim claim){
+    public void updatePredicates(Claim claim) {
         predicates.forEach(predicate -> predicate.updateResources(claim));
     }
-    public void resetPredicates(){
+
+    public void resetPredicates() {
         predicates.forEach(UpdatablePredicate::resetResource);
     }
 

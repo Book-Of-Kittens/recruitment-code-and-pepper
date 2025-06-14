@@ -8,14 +8,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class SampleFromFile {
 
     public static final String DEFAULT_FILE = "/samples/claims.csv";
 
-    public static List<Claim> withDefaultData(){
+    public static List<Claim> withDefaultData() {
         URL samples = SampleFromFile.class.getResource(DEFAULT_FILE);
         return getClaims(samples);
     }
@@ -25,25 +27,27 @@ public class SampleFromFile {
         Path path;
         try {
             path = Paths.get(Objects.requireNonNull(initialDataUrl).toURI());
-        } catch (URISyntaxException e) { throw new RuntimeException(e);}
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         try (Stream<String> lines = Files.lines(path)) {
-                return lines.map(line -> Arrays.asList(line.split(",")))
-                        .skip(1)
-                        .map(SampleFromFile::parse)
-                        .toList();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return lines.map(line -> Arrays.asList(line.split(",")))
+                    .skip(1)
+                    .map(SampleFromFile::parse)
+                    .toList();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
-    private static Claim parse(List<String> record){
+    private static Claim parse(List<String> record) {
         return new Claim(record.get(0),
-                record.get(1),
+                ClaimType.valueOf(record.get(1)),
                 BigDecimal.valueOf(Double.parseDouble(record.get(2))),
                 LocalDate.parse(record.get(3)),
-                record.get(4),
+                ComplexityLevel.valueOf(record.get(4)),
                 null);
     }
 

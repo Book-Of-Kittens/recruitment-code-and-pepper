@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record Claim(String id,
-                    String type,
+                    ClaimType type,
                     BigDecimal amount,
                     LocalDate deadline, // NOTE: in the real world, we would probably need a ZonedDateTime to keep track of different time zones.
-                    String complexity,
+                    ComplexityLevel complexity,
                     Integer postponeOrder) {
 }

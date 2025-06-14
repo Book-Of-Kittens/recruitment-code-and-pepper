@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-public class InMemoryResourcesService implements ResourcesService{
+public class InMemoryResourcesService implements ResourcesService {
 
+    Set<String> processedIds = new HashSet<>();
     private BigDecimal commonBudget = BigDecimal.ZERO;
     private int commonHighComplexityCounter = 0;
-    Set<String> processedIds = new HashSet<>();
 
     @Override
-    public boolean isIdProcessed(String id){
+    public boolean isIdProcessed(String id) {
         return processedIds.contains(id);
     }
 
     @Override
-    public void addProcessedId(String id){
+    public void addProcessedId(String id) {
         processedIds.add(id);
     }
 

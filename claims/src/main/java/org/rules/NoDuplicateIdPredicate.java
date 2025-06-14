@@ -5,7 +5,7 @@ import org.resources.ResourcesService;
 
 import java.util.function.Predicate;
 
-public class NoDuplicateIdPredicate implements UpdatablePredicate{
+public class NoDuplicateIdPredicate implements UpdatablePredicate {
 
     private final ResourcesService resourcesService;
 
@@ -13,7 +13,7 @@ public class NoDuplicateIdPredicate implements UpdatablePredicate{
         this.resourcesService = resourcesService;
     }
 
-    public void updateResources(Claim claim){
+    public void updateResources(Claim claim) {
         resourcesService.addProcessedId(claim.id());
     }
 
@@ -22,7 +22,7 @@ public class NoDuplicateIdPredicate implements UpdatablePredicate{
         /* we don't want to forget this list */
     }
 
-    public Predicate<Claim> getPredicate(){
-       return claim -> !resourcesService.isIdProcessed(claim.id());
-   }
+    public Predicate<Claim> getPredicate() {
+        return claim -> !resourcesService.isIdProcessed(claim.id());
+    }
 }

@@ -9,15 +9,16 @@ public class InMemoryClaimsOrderingService implements ClaimsOrderingService {
     as far as I understand the requirements, every day the engine has to iterate through all unresolved claims anyway. */
 
     private final Map<String, Claim> claimsById = new HashMap<>();
-    private final Map<String, Comparator<Claim>> comparators;
+    private final Map<ClaimType, Comparator<Claim>> comparators;
 
-    public InMemoryClaimsOrderingService(Map<String, Comparator<Claim>> comparators) {
+    public InMemoryClaimsOrderingService(Map<ClaimType, Comparator<Claim>> comparators) {
         this.comparators = comparators;
     }
 
     @Override
     public List<Claim> getClaimsInOrder() {
-        Map<String, List<Claim>> claimsByType = claimsById.values().stream().collect(Collectors.groupingBy(Claim::type));
+        Map<ClaimType, List<Claim>> claimsByType = claimsById.values().stream()
+                .collect(Collectors.groupingBy(Claim::type));
         claimsByType.forEach((type, list) -> list.sort(comparators.get(type)));
 
         /* I don't know how to compare claims from different types, so I am doing this the easiest way */

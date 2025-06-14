@@ -1,6 +1,7 @@
 package org.rules;
 
 import org.claims.Claim;
+import org.claims.ComplexityLevel;
 import org.resources.ResourcesService;
 
 import java.util.function.Predicate;
@@ -14,9 +15,14 @@ public class DailyComplexityPredicate implements UpdatablePredicate {
         this.limit = dailyComplexClaimLimit;
         this.resourcesService = resourcesService;
     }
+
+    private static boolean isComplex(Claim claim) {
+        return ComplexityLevel.HIGH == claim.complexity();
+    }
+
     @Override
-    public void updateResources(Claim claim){
-        if (isComplex(claim)){
+    public void updateResources(Claim claim) {
+        if (isComplex(claim)) {
             resourcesService.updateDailyComplexClaimsCounter();
         }
     }
@@ -27,12 +33,8 @@ public class DailyComplexityPredicate implements UpdatablePredicate {
     }
 
     @Override
-   public Predicate<Claim> getPredicate(){
-       return claim -> !isComplex(claim) ||  resourcesService.getDailyComplexClaimsCounter()<limit;
-   }
-
-   private static boolean isComplex(Claim claim){
-        return ComplexityLevel.HIGH.name().equals(claim.complexity());
-   }
+    public Predicate<Claim> getPredicate() {
+        return claim -> !isComplex(claim) || resourcesService.getDailyComplexClaimsCounter() < limit;
+    }
 
 }
