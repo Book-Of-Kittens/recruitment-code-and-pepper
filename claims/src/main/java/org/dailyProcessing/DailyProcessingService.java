@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DailyProcessingService {
 
-    public static final Comparator<WaitListService> WAIT_LIST_SERVICE_COMPARATOR = Comparator.comparing(WaitListService::getPriority).reversed();
+    public static final Comparator<WaitListService> BY_PRIORITY = Comparator.comparing(WaitListService::getPriority).reversed();
     private final ClaimApprovalService approvalService;
     private final List<WaitListService> waitLists;
 
@@ -38,7 +38,7 @@ public class DailyProcessingService {
 
     private Claim chooseClaim() {
         return waitLists.stream().filter(WaitListService::hasClaimsToProcess)
-                .min(WAIT_LIST_SERVICE_COMPARATOR)
+                .min(BY_PRIORITY)
                 .map(WaitListService::getClaimForProcessing).orElse(null);
     }
 

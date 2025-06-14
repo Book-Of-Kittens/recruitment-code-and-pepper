@@ -6,7 +6,7 @@ import org.resources.ResourcesService;
 
 import java.util.function.Predicate;
 
-public class DailyComplexityPredicate implements UpdatablePredicate {
+public class DailyComplexityPredicate implements Predicate<Claim> {
 
     final private int limit;
     private final ResourcesService resourcesService;
@@ -21,8 +21,8 @@ public class DailyComplexityPredicate implements UpdatablePredicate {
     }
 
     @Override
-    public Predicate<Claim> predicate() {
-        return claim -> !isComplex(claim) || resourcesService.get().highComplexityCounter() < limit;
-    }
+    public boolean test(Claim claim) {
 
+        return (!isComplex(claim)) || (resourcesService.get().highComplexityCounter() < limit);
+    }
 }

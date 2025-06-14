@@ -3,25 +3,25 @@ package org.claims;
 import org.events.ClaimEventsQueue;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
-import org.rules.UpdatablePredicate;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class InMemoryWaitListService implements WaitListService {
 
 
     // TODO: to be considered: compound predicate with possible custom logic instead of the list. currently  unclear which lists are OR and which are AND.
-    private final List<UpdatablePredicate> consumePredicate;
+    private final List<Predicate<Claim>> consumePredicate;
     private final Comparator<Claim> orderSource;/* TODO: list order! */
 
     private final List<Claim> waitList = new LinkedList<>(); // TODO: choose structure
     private final HashMap<String, Claim> currentlyProcessed = new HashMap<>(); // TODO: thread safety!
     private final List<Claim> postponed = new LinkedList<>();
 
-    public InMemoryWaitListService(ClaimEventsQueue events, List<UpdatablePredicate> consumePredicate, Comparator<Claim> orderSource) {
+    public InMemoryWaitListService(ClaimEventsQueue events, List<Predicate<Claim>> consumePredicate, Comparator<Claim> orderSource) {
         this.consumePredicate = consumePredicate;
         this.orderSource = orderSource;
         events.subscribe(this::onEvent);
@@ -69,7 +69,7 @@ public class InMemoryWaitListService implements WaitListService {
     }
 
     private void tryConsume(Claim claim) {
-        boolean shouldConsume = consumePredicate.stream().anyMatch(predicate -> predicate.predicate().test(claim));
+        boolean shouldConsume = consumePredicate.stream().anyMatch(predicate -> predicate.test(claim));
         if (!shouldConsume) return;
         waitList.add(claim);
     }

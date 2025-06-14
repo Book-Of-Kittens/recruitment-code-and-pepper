@@ -5,7 +5,7 @@ import org.resources.ResourcesService;
 
 import java.util.function.Predicate;
 
-public class NoDuplicateIdPredicate implements UpdatablePredicate {
+public class NoDuplicateIdPredicate implements Predicate<Claim> {
 
     private final ResourcesService resourcesService;
 
@@ -13,7 +13,8 @@ public class NoDuplicateIdPredicate implements UpdatablePredicate {
         this.resourcesService = resourcesService;
     }
 
-    public Predicate<Claim> predicate() {
-        return claim -> !resourcesService.get().processedIds().contains(claim.id());
+    @Override
+    public boolean test(Claim claim) {
+        return !resourcesService.get().processedIds().contains(claim.id());
     }
 }

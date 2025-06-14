@@ -9,7 +9,7 @@ public class ClaimConfig {
     public static ClaimApprovalService getClaimApprovalService(ResourcesService resourcesService, ClaimEventsQueue claimEventsQueue) {
 
         return new ClaimApprovalService(
-                BusinessRulesConfiguration.approvalPredicates(resourcesService),
+                BusinessRulesConfiguration.commonApprovalPredicate(resourcesService),
                 claimEventsQueue);
     }        // TODO: active management of the number of services?
 

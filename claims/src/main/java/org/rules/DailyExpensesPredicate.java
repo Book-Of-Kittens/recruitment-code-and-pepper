@@ -6,7 +6,7 @@ import org.resources.ResourcesService;
 import java.math.BigDecimal;
 import java.util.function.Predicate;
 
-public class DailyExpensesPredicate implements UpdatablePredicate {
+public class DailyExpensesPredicate implements Predicate<Claim> {
 
     private final BigDecimal dailyLimit;
     private final ResourcesService resourcesService;
@@ -17,7 +17,7 @@ public class DailyExpensesPredicate implements UpdatablePredicate {
     }
 
     @Override
-    public Predicate<Claim> predicate() {
-        return claim -> resourcesService.get().budget().add(claim.amount()).compareTo(dailyLimit) >= 0;
+    public boolean test(Claim claim) {
+        return resourcesService.get().budget().add(claim.amount()).compareTo(dailyLimit) >= 0;
     }
 }

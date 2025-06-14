@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class BusinessRulesConfiguration {
 
@@ -16,18 +17,14 @@ public class BusinessRulesConfiguration {
             ClaimType.VEHICLE, ClaimComparators.forVehicle(),
             ClaimType.PROPERTY, ClaimComparators.forProperty());
 
-    public static List<UpdatablePredicate> approvalPredicates(ResourcesService resourcesService) {
-        return List.of(new DailyComplexityPredicate(2, resourcesService),
-                new DailyExpensesPredicate(BigDecimal.valueOf(15000L), resourcesService),
-                new NoDuplicateIdPredicate(resourcesService));
+    public static Predicate<Claim> commonApprovalPredicate(ResourcesService resourcesService) {
+        return new DailyComplexityPredicate(2, resourcesService)
+                .and(new DailyExpensesPredicate(BigDecimal.valueOf(15000L), resourcesService))
+                .and(new NoDuplicateIdPredicate(resourcesService));
     }
 
-    public static List<UpdatablePredicate> all() {
-        return List.of(new StatelessPredicate(_ -> true));
-    }
-
-    public static List<UpdatablePredicate> ofType(ClaimType claimType) {
-        return List.of(new StatelessPredicate(claim -> claimType == claim.type()));
+    public static List<Predicate<Claim>> ofType(ClaimType claimType) {
+        return List.of(claim -> claimType == claim.type());
     }
 
     /* TODO: make things package local */
