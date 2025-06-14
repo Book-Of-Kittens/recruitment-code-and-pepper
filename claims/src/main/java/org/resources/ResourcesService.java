@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 public class ResourcesService {
-    /* TODO: RESET? */
+
     private final ResourcePersistence resourcePersistence;
     /* TODO: add thread safety hurray */
 
@@ -20,8 +20,22 @@ public class ResourcesService {
         events.subscribe(event -> {
             if (isClaimApprovedEvent(event)) updateForClaimApprovedEvent(event.claim());
         });
-
     }
+
+    public ResourcesState get() {
+        return resourcePersistence.getResourcesState(); /* TODO:a copy! */
+    }
+
+    public void resetDailyLimits() {
+        ResourcesState oldState = resourcePersistence.getResourcesState();
+
+        ResourcesState newState = new ResourcesState(
+                oldState.processedIds(),
+                BigDecimal.ZERO,
+                0);
+        resourcePersistence.setResourcesState(newState);
+    }
+
 
     private boolean isClaimApprovedEvent(ClaimUpdatedEvent event) {
         return EventType.APPROVED == event.eventType();
@@ -38,7 +52,4 @@ public class ResourcesService {
         resourcePersistence.setResourcesState(new ResourcesState(processedIds, commonBudget, commonHighComplexityCounter));
     }
 
-    public ResourcesState get() {
-        return resourcePersistence.getResourcesState(); /* TODO:a copy! */
-    }
 }

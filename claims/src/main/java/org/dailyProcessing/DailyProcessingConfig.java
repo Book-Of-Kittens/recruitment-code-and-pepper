@@ -17,7 +17,8 @@ public class DailyProcessingConfig {
         ResourcesService resourcesService = new ResourcesService(events, resourcePersistence);
         ClaimApprovalService claimApprovalService = ClaimConfig.getClaimApprovalService(resourcesService, events);
         List<WaitListService> waitListServices = WaitListConfig.getWaitListServices(events);
+        ProcessClaimService processClaimService = new ProcessClaimService(claimApprovalService, waitListServices);
 
-        return new DailyProcessingService(claimApprovalService, waitListServices);
+        return new DailyProcessingService(waitListServices, processClaimService, resourcesService);
     }
 }

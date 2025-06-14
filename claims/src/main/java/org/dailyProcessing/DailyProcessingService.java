@@ -1,41 +1,36 @@
 package org.dailyProcessing;
 
-import org.approval.ClaimApprovalService;
-import org.claims.Claim;
+import org.resources.ResourcesService;
 import org.waitList.WaitListService;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class DailyProcessingService {
 
-    public static final Comparator<WaitListService> BY_PRIORITY = Comparator.comparing(WaitListService::getPriority).reversed();
-    private final ClaimApprovalService approvalService;
     private final List<WaitListService> waitLists;
+    private final ProcessClaimService processClaimService;
+    private final ResourcesService resourcesService;
 
-    public DailyProcessingService(ClaimApprovalService approvalService,
-                                  List<WaitListService> waitLists) {
-        this.approvalService = approvalService;
+    public DailyProcessingService(List<WaitListService> waitLists,
+                                  ProcessClaimService processClaimService,
+                                  ResourcesService resourcesService) {
         this.waitLists = waitLists;
+        this.processClaimService = processClaimService;
+        this.resourcesService = resourcesService;
     }
 
     public void processDay() {
-        Claim claim;
-        do {
-            claim = chooseClaim();
-            if (null != claim) {
-                approvalService.consider(claim);
-            }
-        } while (null != claim);
+
+        resourcesService.resetDailyLimits();
+
+        while (hasClaimsToProcess()) {
+            processClaimService.processClaim();
+        }
 
         waitLists.forEach(WaitListService::placePostponedBackOnTheWaitList);
     }
 
-    private Claim chooseClaim() {
-        return waitLists.stream()
-                .filter(WaitListService::hasClaimsToProcess)
-                .min(BY_PRIORITY)
-                .map(WaitListService::getClaimForProcessing).orElse(null);
+    private boolean hasClaimsToProcess() {
+        return waitLists.stream().anyMatch(WaitListService::hasClaimsToProcess);
     }
-
 }
