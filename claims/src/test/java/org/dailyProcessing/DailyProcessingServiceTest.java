@@ -1,12 +1,14 @@
 package org.dailyProcessing;
 
 import org.claims.Claim;
+import org.claims.ClaimType;
 import org.claims.ComplexityLevel;
 import org.events.ClaimEventsBus;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.junit.Test;
 import org.resources.SampleFromFile;
+import org.rules.ClaimComparators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,24 @@ public class DailyProcessingServiceTest {
         // THEN
         assertComplexityLimitNotExceeded(updates);
         assertAllNewGotProcessed(updates);
+        assertProcessingOrder(updates);
+    }
+
+    private void assertProcessingOrder(List<ClaimUpdatedEvent> updates) {
+        List<Claim> medicalClaims = updates.stream()
+                .filter(EventType.NEW.isOfType().negate())
+                .map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.MEDICAL == c.type()).toList();
+        assertThat(medicalClaims).isSortedAccordingTo(ClaimComparators.forMedical());
+
+        List<Claim> vehicleClaims = updates.stream()
+                .filter(EventType.NEW.isOfType().negate())
+                .map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.VEHICLE == c.type()).toList();
+        assertThat(vehicleClaims).isSortedAccordingTo(ClaimComparators.forVehicle());
+
+        List<Claim> propertyClaims = updates.stream()
+                .filter(EventType.NEW.isOfType().negate())
+                .map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.PROPERTY == c.type()).toList();
+        assertThat(propertyClaims).isSortedAccordingTo(ClaimComparators.forProperty());
     }
 
     private void assertAllNewGotProcessed(List<ClaimUpdatedEvent> updates) {
