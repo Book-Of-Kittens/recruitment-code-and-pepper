@@ -14,14 +14,14 @@ public class InMemoryWaitListService implements WaitListService {
 
 
     // TODO: to be considered: compound predicate with possible custom logic instead of the list. currently  unclear which lists are OR and which are AND.
-    private final List<Predicate<Claim>> consumePredicate;
+    private final Predicate<Claim> consumePredicate;
     private final Comparator<Claim> orderSource;/* TODO: list order! */
 
     private final List<Claim> waitList = new LinkedList<>(); // TODO: choose structure
     private final HashMap<String, Claim> currentlyProcessed = new HashMap<>(); // TODO: thread safety!
     private final List<Claim> postponed = new LinkedList<>();
 
-    public InMemoryWaitListService(ClaimEventsQueue events, List<Predicate<Claim>> consumePredicate, Comparator<Claim> orderSource) {
+    public InMemoryWaitListService(ClaimEventsQueue events, Predicate<Claim> consumePredicate, Comparator<Claim> orderSource) {
         this.consumePredicate = consumePredicate;
         this.orderSource = orderSource;
         events.subscribe(this::onEvent);
@@ -69,9 +69,7 @@ public class InMemoryWaitListService implements WaitListService {
     }
 
     private void tryConsume(Claim claim) {
-        boolean shouldConsume = consumePredicate.stream().anyMatch(predicate -> predicate.test(claim));
-        if (!shouldConsume) return;
-        waitList.add(claim);
+        if (consumePredicate.test(claim)) waitList.add(claim);
     }
 
     private void postponeClaim(Claim claim) {

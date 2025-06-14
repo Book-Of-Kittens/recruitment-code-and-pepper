@@ -6,7 +6,6 @@ import org.resources.ResourcesService;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -23,8 +22,8 @@ public class BusinessRulesConfiguration {
                 .and(new NoDuplicateIdPredicate(resourcesService));
     }
 
-    public static List<Predicate<Claim>> ofType(ClaimType claimType) {
-        return List.of(claim -> claimType == claim.type());
+    public static Predicate<Claim> ofType(ClaimType claimType) {
+        return claim -> claimType == claim.type();
     }
 
     /* TODO: make things package local */

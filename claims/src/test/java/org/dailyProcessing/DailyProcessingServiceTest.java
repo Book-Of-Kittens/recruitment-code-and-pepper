@@ -1,12 +1,10 @@
 package org.dailyProcessing;
 
 import org.claims.Claim;
-import org.claims.TestConfiguration;
 import org.events.ClaimEventsQueue;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.junit.Test;
-import org.resources.ResourcesService;
 import org.resources.SampleFromFile;
 
 import java.util.List;
@@ -16,10 +14,12 @@ public class DailyProcessingServiceTest {
     @Test
     public void shouldProcessSomething() {
 
-        ClaimEventsQueue queue = TestConfiguration.queue;
+        DailyProcessingTestContext context = new DailyProcessingTestContext();
+
+
+        ClaimEventsQueue queue = context.queue;
         printFrom(queue);
-        ResourcesService resources = TestConfiguration.resourcesService;
-        DailyProcessingService dailyProcessingService = TestConfiguration.DailyProcessingService(resources);
+        DailyProcessingService dailyProcessingService = context.dailyProcessingService;
 
 
         // throw data onto waiting lists
