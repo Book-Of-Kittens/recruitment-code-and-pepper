@@ -13,4 +13,12 @@ public class ClaimApprovalService {
         this.approveCondition = approvalPredicates;
         this.consumeCondition = consumeCondition;
     }
+
+    public Boolean tryConsume(Claim claim) { /*TODO: prob. not the best way to do this */
+        return true;
+    }
+
+    public Boolean approve(Claim claim) {
+        return true; /* TODO */
+    }
 }

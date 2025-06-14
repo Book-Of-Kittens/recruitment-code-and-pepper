@@ -1,4 +1,9 @@
 package org.resources;
 
-public class IncomingClaimsService {
+import org.claims.Claim;
+
+import java.util.List;
+
+public interface IncomingClaimsService {
+    List<Claim> getAll();
 }

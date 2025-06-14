@@ -1,6 +1,7 @@
 package org.claims;
 
 import org.engine.DailyProcessingService;
+import org.resources.InMemoryIncomingClaimsService;
 import org.resources.InMemoryResourcesService;
 import org.resources.IncomingClaimsService;
 import org.resources.ResourcesService;
@@ -20,7 +21,7 @@ public class TestConfiguration {
     }
 
     public static IncomingClaimsService incomingClaimsService() {
-        return new IncomingClaimsService(); /* TODO: only in memory implementation */
+        return new InMemoryIncomingClaimsService(); /* TODO: only in memory implementation */
     }
 
     public static DailyProcessingService DailyProcessingService(ResourcesService resourcesService, IncomingClaimsService incomingClaimsService) {
@@ -28,7 +29,7 @@ public class TestConfiguration {
         List<WaitListService> waitLists = getWaitListServices(incomingClaimsService); /* TODO: use real config when possible */
         return new DailyProcessingService(approval, waitLists);
     }
-    
+
     public static List<WaitListService> getWaitListServices(IncomingClaimsService incomingClaimsService) {
 
         return List.of(
