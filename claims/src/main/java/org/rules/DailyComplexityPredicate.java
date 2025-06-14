@@ -21,20 +21,8 @@ public class DailyComplexityPredicate implements UpdatablePredicate {
     }
 
     @Override
-    public void updateResources(Claim claim) {
-        if (isComplex(claim)) {
-            resourcesService.updateDailyComplexClaimsCounter();
-        }
-    }
-
-    @Override
-    public void resetResource() {
-        resourcesService.resetComplexityCounter();
-    }
-
-    @Override
     public Predicate<Claim> predicate() {
-        return claim -> !isComplex(claim) || resourcesService.getDailyComplexClaimsCounter() < limit;
+        return claim -> !isComplex(claim) || resourcesService.get().highComplexityCounter() < limit;
     }
 
 }

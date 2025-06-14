@@ -1,4 +1,8 @@
-package org.claims;
+package org.resources;
+
+import org.claims.Claim;
+import org.claims.ClaimType;
+import org.claims.ComplexityLevel;
 
 import java.io.IOException;
 import java.math.BigDecimal;

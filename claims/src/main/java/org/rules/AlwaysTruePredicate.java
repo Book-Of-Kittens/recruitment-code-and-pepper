@@ -11,13 +11,4 @@ public class AlwaysTruePredicate implements UpdatablePredicate {
         return _ -> true;
     }
 
-    @Override
-    public void updateResources(Claim claim) {
-
-    }
-
-    @Override
-    public void resetResource() {
-
-    }
 }

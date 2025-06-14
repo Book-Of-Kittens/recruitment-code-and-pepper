@@ -8,8 +8,4 @@ public interface UpdatablePredicate {
 
     Predicate<Claim> predicate();
 
-    void updateResources(Claim claim);
-
-    void resetResource();
-
 }

@@ -1,53 +1,44 @@
 package org.resources;
 
+import org.claims.Claim;
+import org.claims.ComplexityLevel;
+import org.events.ClaimEventsQueue;
+import org.events.ClaimUpdatedEvent;
+import org.events.EventType;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 public class InMemoryResourcesService implements ResourcesService {
+    /* TODO: add thread safety hurray */
+    ResourcesState resourcesState = new ResourcesState(new HashSet<>(), BigDecimal.ZERO, 0);
 
-    Set<String> processedIds = new HashSet<>();
-    private BigDecimal commonBudget = BigDecimal.ZERO;
-    private int commonHighComplexityCounter = 0;
+    public InMemoryResourcesService(ClaimEventsQueue events) {
 
-    @Override
-    public boolean isIdProcessed(String id) {
-        return processedIds.contains(id);
+        events.subscribe(event -> {
+            if (isClaimApprovedEvent(event)) updateForClaimApprovedEvent(event.claim());
+        });
+
+    }
+
+    private boolean isClaimApprovedEvent(ClaimUpdatedEvent event) {
+        return EventType.APPROVED == event.eventType();
+    }
+
+    private void updateForClaimApprovedEvent(Claim claim) {
+        Set<String> processedIds = resourcesState.processedIds();
+        processedIds.add(claim.id());
+        BigDecimal commonBudget = resourcesState.budget().add(claim.amount());
+
+        int commonHighComplexityCounter = resourcesState.highComplexityCounter();
+        if (ComplexityLevel.HIGH == claim.complexity()) commonHighComplexityCounter++;
+
+        resourcesState = new ResourcesState(processedIds, commonBudget, commonHighComplexityCounter);
     }
 
     @Override
-    public void addProcessedId(String id) {
-        processedIds.add(id);
+    public ResourcesState get() {
+        return resourcesState; /* TODO:a copy! */
     }
-
-    @Override
-    public BigDecimal getDailyExpenses() {
-        return commonBudget;
-    }
-
-    @Override
-    public int getDailyComplexClaimsCounter() {
-        return commonHighComplexityCounter;
-    }
-
-    @Override
-    public void updateDailyComplexClaimsCounter() {
-        commonHighComplexityCounter++;
-    }
-
-    @Override
-    public void resetComplexityCounter() {
-        commonHighComplexityCounter = 0;
-    }
-
-    @Override
-    public void addExpenses(BigDecimal amount) {
-        commonBudget = commonBudget.add(amount);
-    }
-
-    @Override
-    public void resetDailyExpenses() {
-        commonBudget = BigDecimal.ZERO;
-    }
-    /* TODO: index data by day instead? */
 }

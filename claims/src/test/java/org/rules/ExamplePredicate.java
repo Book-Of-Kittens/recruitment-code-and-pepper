@@ -12,13 +12,4 @@ public class ExamplePredicate implements UpdatablePredicate {
         return claim -> dailyClaims < 5;
     }
 
-    @Override
-    public void updateResources(Claim claim) {
-        dailyClaims++;
-    }
-
-    @Override
-    public void resetResource() {
-        dailyClaims = 0;
-    }
 }
