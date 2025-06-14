@@ -20,7 +20,9 @@ public class ClaimApprovalService {
 
         boolean result = approveCondition.test(claim);
 
-        if (result) eventsQueue.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVED));
-        else eventsQueue.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVAL_POSTPONED));
+        if (result)
+            eventsQueue.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVED));
+        else
+            eventsQueue.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVAL_POSTPONED));
     }
 }

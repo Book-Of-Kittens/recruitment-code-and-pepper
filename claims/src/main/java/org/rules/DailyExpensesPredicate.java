@@ -18,6 +18,6 @@ public class DailyExpensesPredicate implements Predicate<Claim> {
 
     @Override
     public boolean test(Claim claim) {
-        return resourcesService.get().budget().add(claim.amount()).compareTo(dailyLimit) >= 0;
+        return resourcesService.get().budget().add(claim.amount()).compareTo(dailyLimit) <= 0;
     }
 }
