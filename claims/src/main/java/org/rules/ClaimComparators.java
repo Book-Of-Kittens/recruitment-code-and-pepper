@@ -8,32 +8,32 @@ import java.util.Comparator;
 public class ClaimComparators {
 
     public static Comparator<Claim> forMedical() {
-        return byDeadline().thenComparing(byAmount());
+        return earlierDeadlineFirst().thenComparing(smallerAmountFirst().reversed());
         // older deadline, bigger amount
     }
 
     public static Comparator<Claim> forVehicle() {
-        return byComplexity().thenComparing(byDeadline()).thenComparing(byAmount());
+        return highComplexityFirst().thenComparing(earlierDeadlineFirst()).thenComparing(smallerAmountFirst().reversed());
         //   bigger complexity, older deadline, bigger amount;
     }
 
     public static Comparator<Claim> forProperty() {
-        return byAmount().thenComparing(byDeadline());
+        return smallerAmountFirst().thenComparing(earlierDeadlineFirst());
         //  smaller amount, bigger deadline;
     }
 
     // Partial:
-    static Comparator<Claim> byDeadline() {
+    static Comparator<Claim> earlierDeadlineFirst() {
         return Comparator.comparing(Claim::deadline); // TODO: check order
     }
 
-    static Comparator<Claim> byAmount() {
+    static Comparator<Claim> smallerAmountFirst() {
         return Comparator.comparing(Claim::amount); // TODO: check order
     }
 
-    static Comparator<Claim> byComplexity() {
+    static Comparator<Claim> highComplexityFirst() {
         return Comparator.comparing(claim ->
-                ComplexityLevel.HIGH == claim.complexity()); // TODO: check order
+                ComplexityLevel.HIGH != claim.complexity());
     }
 
 }
