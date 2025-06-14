@@ -8,5 +8,5 @@ public record Claim(String id,
                     BigDecimal amount,
                     LocalDate deadline, // NOTE: in the real world, we would probably need a ZonedDateTime to keep track of different time zones.
                     ComplexityLevel complexity,
-                    Integer postponeOrder) {
+                    LocalDate postponeDate) { /* TODO: maybe a separate type depending on if if it's waiting or new? */
 }

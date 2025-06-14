@@ -2,7 +2,7 @@ package org.engine;
 
 import org.claims.Claim;
 import org.claims.ClaimApprovalService;
-import org.claims.WaitlistService;
+import org.claims.WaitListService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,10 +10,10 @@ import java.util.List;
 public class DailyProcessingService {
 
     private final ClaimApprovalService approvalService;
-    private final List<WaitlistService> waitLists;
+    private final List<WaitListService> waitLists;
 
     public DailyProcessingService(ClaimApprovalService approvalService,
-                                  List<WaitlistService> waitLists) {
+                                  List<WaitListService> waitLists) {
         this.approvalService = approvalService;
         this.waitLists = waitLists;
     }
