@@ -1,25 +1,52 @@
 package org.engine;
 
 import org.claims.Claim;
-import org.claims.ClaimsRepository;
-import org.progress.ProgressRepository;
+import org.claims.ClaimsOrderingService;
+import org.resources.ResourcesService;
+import org.rules.ApprovalService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Engine {
 
-    private final ClaimsRepository claimsRepository;
-    private final ProgressRepository progressRepository;
+    private final ClaimsOrderingService claimsOrderingService;
+    private final ApprovalService approvalService;
 
-
-    public Engine(ClaimsRepository claimsRepository, ProgressRepository progressRepository) {
-        this.claimsRepository = claimsRepository;
-        this.progressRepository = progressRepository;
+    public Engine(ClaimsOrderingService claimsOrderingService,
+                  ApprovalService approvalService) {
+        this.claimsOrderingService = claimsOrderingService;
+        this.approvalService = approvalService;
     }
 
-    public static List<Claim> processDay(){
-        List<Claim> processedClaims = new ArrayList<>();
+    public void process(){
+
+        while (!claimsOrderingService.isEmpty()) {
+            processDay();
+        }
+    }
+
+    public List<Claim> processDay(){
+
+        System.out.println("--");
+        approvalService.resetPredicates(); /* TODO */
+
+        List<Claim> processedClaims = new LinkedList<>();
+        List<Claim> claimsInOrder = claimsOrderingService.getClaimsInOrder();
+        for (Claim claim : claimsInOrder) {
+            if (approvalService.shouldProcess(claim)){
+
+                approvalService.updatePredicates(claim);
+                processedClaims.add(claim);
+                claimsOrderingService.removeClaim(claim);
+
+                processClaim(claim);
+            }
+        }
         return processedClaims;
+    }
+
+
+    public void processClaim(Claim claim){
+        System.out.println(claim.id() +" "+claim.amount()+" "+claim.complexity());
     }
 }
