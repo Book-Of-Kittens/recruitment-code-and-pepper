@@ -4,10 +4,7 @@ import org.events.ClaimEventsQueue;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class InMemoryWaitListService implements WaitListService {
@@ -15,23 +12,21 @@ public class InMemoryWaitListService implements WaitListService {
 
     // TODO: to be considered: compound predicate with possible custom logic instead of the list. currently  unclear which lists are OR and which are AND.
     private final Predicate<Claim> consumePredicate;
-    private final Comparator<Claim> orderSource;/* TODO: list order! */
 
-    private final List<Claim> waitList = new LinkedList<>(); // TODO: choose structure
+    private final PriorityQueue<Claim> waitList; // TODO: choose structure
     private final HashMap<String, Claim> currentlyProcessed = new HashMap<>(); // TODO: thread safety!
     private final List<Claim> postponed = new LinkedList<>();
 
     public InMemoryWaitListService(ClaimEventsQueue events, Predicate<Claim> consumePredicate, Comparator<Claim> orderSource) {
+        this.waitList = new PriorityQueue<>(orderSource);
         this.consumePredicate = consumePredicate;
-        this.orderSource = orderSource;
         events.subscribe(this::onEvent);
     }
 
     @Override
     public Claim getClaimForProcessing() {
         if (waitList.isEmpty()) return null;
-        Claim claim = waitList.getFirst();
-        waitList.removeFirst(); /* TODO: list order! */
+        Claim claim = waitList.poll();
         currentlyProcessed.put(claim.id(), claim);
         return claim;
     }
