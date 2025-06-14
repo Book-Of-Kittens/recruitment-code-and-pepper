@@ -51,8 +51,8 @@ public class SampleFromFile {
                 ClaimType.valueOf(record.get(1)),
                 BigDecimal.valueOf(Double.parseDouble(record.get(2))),
                 LocalDate.parse(record.get(3)),
-                ComplexityLevel.valueOf(record.get(4)),
-                null);
+                ComplexityLevel.valueOf(record.get(4))
+        );
     }
 
 }

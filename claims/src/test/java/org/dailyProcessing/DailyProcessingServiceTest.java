@@ -2,7 +2,7 @@ package org.dailyProcessing;
 
 import org.claims.Claim;
 import org.claims.ComplexityLevel;
-import org.events.ClaimEventsQueue;
+import org.events.ClaimEventsBus;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.junit.Test;
@@ -21,9 +21,9 @@ public class DailyProcessingServiceTest {
         DailyProcessingTestContext context = new DailyProcessingTestContext();
 
         List<ClaimUpdatedEvent> updates = new ArrayList<>();
-        context.queue.subscribe(updates::add);
+        context.events.subscribe(updates::add);
 
-        populateWithExampleData(context.queue);
+        populateWithExampleData(context.events);
 
         // WHEN
         context.dailyProcessingService.processDay();
@@ -51,8 +51,8 @@ public class DailyProcessingServiceTest {
         assertThat(complexClaimsApprovals).hasSizeLessThanOrEqualTo(2);
     }
 
-    private void populateWithExampleData(ClaimEventsQueue queue) {
+    private void populateWithExampleData(ClaimEventsBus events) {
         List<Claim> claims = SampleFromFile.withDefaultData();
-        claims.stream().map(claim -> new ClaimUpdatedEvent(claim, EventType.NEW)).forEach(queue::raiseEvent);
+        claims.stream().map(claim -> new ClaimUpdatedEvent(claim, EventType.NEW)).forEach(events::raiseEvent);
     }
 }

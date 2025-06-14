@@ -1,6 +1,7 @@
-package org.claims;
+package org.waitList;
 
-import org.events.ClaimEventsQueue;
+import org.claims.Claim;
+import org.events.ClaimEventsBus;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 
@@ -9,15 +10,15 @@ import java.util.function.Predicate;
 
 public class InMemoryWaitListService implements WaitListService {
 
-
-    // TODO: to be considered: compound predicate with possible custom logic instead of the list. currently  unclear which lists are OR and which are AND.
     private final Predicate<Claim> consumePredicate;
 
     private final PriorityQueue<Claim> waitList;
     private final HashMap<String, Claim> currentlyProcessed = new HashMap<>(); // TODO: thread safety!
     private final List<Claim> postponed = new LinkedList<>();
 
-    public InMemoryWaitListService(ClaimEventsQueue events, Predicate<Claim> consumePredicate, Comparator<Claim> orderSource) {
+    public InMemoryWaitListService(ClaimEventsBus events,
+                                   Predicate<Claim> consumePredicate,
+                                   Comparator<Claim> orderSource) {
         this.waitList = new PriorityQueue<>(20, orderSource);
         this.consumePredicate = consumePredicate;
         events.subscribe(this::onEvent);
@@ -32,7 +33,7 @@ public class InMemoryWaitListService implements WaitListService {
     }
 
     @Override
-    public void reingestPostponed() {
+    public void placePostponedBackOnTheWaitList() {
         postponed.forEach(this::tryConsume);
     }
 
@@ -40,7 +41,6 @@ public class InMemoryWaitListService implements WaitListService {
     public int getPriority() {
         return waitList.size(); /* might be also something configured */
     }
-
 
     @Override
     public boolean hasClaimsToProcess() {

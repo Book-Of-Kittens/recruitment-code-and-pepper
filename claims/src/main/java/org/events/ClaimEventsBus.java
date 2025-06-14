@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ClaimEventsQueue {
+public class ClaimEventsBus {
 
     private final List<Consumer<ClaimUpdatedEvent>> consumers = new ArrayList<>();
 

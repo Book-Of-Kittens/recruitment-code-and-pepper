@@ -1,11 +1,10 @@
 package org.dailyProcessing;
 
+import org.approval.ClaimApprovalService;
 import org.claims.Claim;
-import org.claims.ClaimApprovalService;
-import org.claims.WaitListService;
+import org.waitList.WaitListService;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DailyProcessingService {
@@ -20,10 +19,7 @@ public class DailyProcessingService {
         this.waitLists = waitLists;
     }
 
-    public List<Claim> processDay() {
-
-        List<Claim> processedClaims = new LinkedList<>();
-
+    public void processDay() {
         Claim claim;
         do {
             claim = chooseClaim();
@@ -32,12 +28,12 @@ public class DailyProcessingService {
             }
         } while (null != claim);
 
-        waitLists.forEach(WaitListService::reingestPostponed);
-        return processedClaims;
+        waitLists.forEach(WaitListService::placePostponedBackOnTheWaitList);
     }
 
     private Claim chooseClaim() {
-        return waitLists.stream().filter(WaitListService::hasClaimsToProcess)
+        return waitLists.stream()
+                .filter(WaitListService::hasClaimsToProcess)
                 .min(BY_PRIORITY)
                 .map(WaitListService::getClaimForProcessing).orElse(null);
     }
