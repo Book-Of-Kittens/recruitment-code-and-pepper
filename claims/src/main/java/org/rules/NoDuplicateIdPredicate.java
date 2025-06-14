@@ -22,7 +22,7 @@ public class NoDuplicateIdPredicate implements UpdatablePredicate {
         /* we don't want to forget this list */
     }
 
-    public Predicate<Claim> getPredicate() {
+    public Predicate<Claim> predicate() {
         return claim -> !resourcesService.isIdProcessed(claim.id());
     }
 }

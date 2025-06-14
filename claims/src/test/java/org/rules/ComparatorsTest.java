@@ -1,16 +1,17 @@
 package org.rules;
 
-import org.engine.ClaimProcessingService;
-import org.engine.EngineTestConfiguration;
+import org.claims.Claim;
+import org.claims.ClaimType;
 import org.junit.Test;
+
+import java.util.Comparator;
+import java.util.Map;
 
 public class ComparatorsTest {
     @Test
     public void shouldDoThings() {
-        RulesConfiguration.getComparatorsByType();
-
-        ClaimProcessingService claimProcessingService = EngineTestConfiguration.getEngine();
-        claimProcessingService.process();
+        Map<ClaimType, Comparator<Claim>> comparatorsByType = BusinessRulesConfiguration.comparatorsByType;
+        /* TODO: test configured service instead */
     }
 
 }

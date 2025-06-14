@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 public interface UpdatablePredicate {
 
-    Predicate<Claim> getPredicate();
+    Predicate<Claim> predicate();
 
     void updateResources(Claim claim);
 

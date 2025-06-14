@@ -33,7 +33,7 @@ public class DailyComplexityPredicate implements UpdatablePredicate {
     }
 
     @Override
-    public Predicate<Claim> getPredicate() {
+    public Predicate<Claim> predicate() {
         return claim -> !isComplex(claim) || resourcesService.getDailyComplexClaimsCounter() < limit;
     }
 

@@ -4,21 +4,20 @@ import org.claims.Claim;
 
 import java.util.function.Predicate;
 
-public class ExamplePredicate implements UpdatablePredicate {
-    int dailyClaims = 0;
+public class AlwaysTruePredicate implements UpdatablePredicate {
 
     @Override
     public Predicate<Claim> predicate() {
-        return claim -> dailyClaims < 5;
+        return _ -> true;
     }
 
     @Override
     public void updateResources(Claim claim) {
-        dailyClaims++;
+
     }
 
     @Override
     public void resetResource() {
-        dailyClaims = 0;
+
     }
 }

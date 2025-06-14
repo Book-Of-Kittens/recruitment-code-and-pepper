@@ -1,7 +1,5 @@
 package org.rules;
 
-import org.claims.Claim;
-import org.claims.SampleFromFile;
 import org.junit.Test;
 import org.resources.InMemoryResourcesService;
 import org.resources.ResourcesService;
@@ -12,9 +10,8 @@ public class PredicatesTest {
     @Test
     public void shouldDoThings() {
         ResourcesService resourcesService = new InMemoryResourcesService();
-        List<UpdatablePredicate> predicateList = RulesConfiguration.getPredicateList(resourcesService);
-        List<Claim> sample = SampleFromFile.withDefaultData();
-
+        List<UpdatablePredicate> predicateList = BusinessRulesConfiguration.approvalPredicates(resourcesService);
+        /* TODO: test configured service instead */
     }
 
 

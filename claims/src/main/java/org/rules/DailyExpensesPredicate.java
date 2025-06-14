@@ -27,7 +27,7 @@ public class DailyExpensesPredicate implements UpdatablePredicate {
     }
 
     @Override
-    public Predicate<Claim> getPredicate() {
+    public Predicate<Claim> predicate() {
         return claim -> resourcesService.getDailyExpenses().add(claim.amount()).compareTo(dailyLimit) >= 0;
     }
 }
