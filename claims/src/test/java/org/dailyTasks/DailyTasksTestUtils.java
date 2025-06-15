@@ -7,6 +7,7 @@ import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.rules.ClaimComparators;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,22 +71,18 @@ public class DailyTasksTestUtils {
         assertThat(complexClaimsApprovals).hasSizeLessThanOrEqualTo(2);
     }
 
-
-    public static void prettyPrint(Integer day, List<ClaimUpdatedEvent> updates) {
-
-        System.out.println("---- " + day + " -----");
-        List<ClaimUpdatedEvent> newClaims = updates.stream().filter(u -> EventType.NEW == u.eventType()).toList();
-        List<ClaimUpdatedEvent> approved = updates.stream().filter(u -> EventType.APPROVED == u.eventType()).toList();
-        List<ClaimUpdatedEvent> postponed = updates.stream().filter(u -> EventType.POSTPONED == u.eventType()).toList();
-
-        System.out.println("considered: " + updates.size() + " NEW: " + newClaims.size() + " APPROVED: " + approved.size() + " POSTPONED: " + postponed.size());
-
-        List<ClaimUpdatedEvent> medical = approved.stream().filter(u -> ClaimType.MEDICAL == u.claim().type()).toList();
-        List<ClaimUpdatedEvent> vehicle = approved.stream().filter(u -> ClaimType.VEHICLE == u.claim().type()).toList();
-        List<ClaimUpdatedEvent> property = approved.stream().filter(u -> ClaimType.PROPERTY == u.claim().type()).toList();
-
-        System.out.println("approved: MEDICAL: " + medical.size() + " VEHICLE: " + vehicle.size() + " PROPERTY: " + property.size());
-
+    public static String forPrint(Claim claim) {
+        return claim.id() + ": " + claim.amount() + " (" + claim.complexity().name() + ")";
     }
 
+    public static void prettyPrint(List<ClaimUpdatedEvent> updates, LocalDate date) {
+
+        System.out.println("=== Dzień " + date + " ===");
+        List<Claim> approved = updates.stream()
+                .filter(u -> EventType.APPROVED == u.eventType())
+                .map(ClaimUpdatedEvent::claim)
+                .toList();
+        approved.forEach(claim -> System.out.println(forPrint(claim)));
+        System.out.println();
+    }
 }

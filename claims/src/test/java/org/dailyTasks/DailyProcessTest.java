@@ -6,6 +6,7 @@ import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +38,18 @@ public class DailyProcessTest {
         // GIVEN
         DailyProcessTestContext context = new DailyProcessTestContext();
 
-        List<Claim> input = SampleFromFile.with(SampleFromFile.SHORT_LIST);
+        List<Claim> input = SampleFromFile.with(SampleFromFile.LONG_LIST);
         putNewClaimsOnEventBus(context.events, input);
 
         // WHEN
         Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = DailyTasksTestUtils.runDailyProcessInALoop(context);
 
         // THEN
+        LocalDate date = LocalDate.parse("2025-06-02");
         for (Map.Entry<Integer, List<ClaimUpdatedEvent>> daySet : updatesByDay.entrySet()) {
-            DailyTasksTestUtils.prettyPrint(daySet.getKey(), daySet.getValue());
+            DailyTasksTestUtils.prettyPrint(daySet.getValue(), date);
             DailyTasksTestUtils.standardDailyOutputAssertions(daySet.getValue());
+            date = date.plusDays(1);
         }
 
         // assert that all claims have been approved for processing after enough days
