@@ -6,28 +6,31 @@ import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
 
 public class InMemoryWaitListService implements WaitListService {
 
     private final Predicate<Claim> consumePredicate;
 
-    private final PriorityQueue<Claim> waitList;
-    private final HashMap<String, Claim> currentlyProcessed = new HashMap<>(); // TODO: thread safety!
-    private final List<Claim> postponed = new LinkedList<>();
+    private final PriorityQueue<Claim> newClaimsQueue;
+    private final HashMap<String, Claim> currentlyProcessed = new HashMap<>();
+    private final AbstractQueue<Claim> postponed = new ConcurrentLinkedQueue<>();
+
+    /* TODO: thread safety. */
 
     public InMemoryWaitListService(ClaimEventsBus events,
                                    Predicate<Claim> consumePredicate,
                                    Comparator<Claim> orderSource) {
-        this.waitList = new PriorityQueue<>(20, orderSource);
+        this.newClaimsQueue = new PriorityQueue<>(20, orderSource);
         this.consumePredicate = consumePredicate;
         events.subscribe(this::onEvent);
     }
 
     @Override
     public Claim getClaimForProcessing() {
-        if (waitList.isEmpty()) return null;
-        Claim claim = waitList.poll();
+        if (newClaimsQueue.isEmpty()) return null;
+        Claim claim = newClaimsQueue.poll();
         currentlyProcessed.put(claim.id(), claim);
         return claim;
     }
@@ -52,12 +55,12 @@ public class InMemoryWaitListService implements WaitListService {
 
     @Override
     public int getPriority() {
-        return waitList.size(); /* might be also something configured */
+        return newClaimsQueue.size(); /* might be also something configured */
     }
 
     @Override
     public boolean hasClaimsToProcess() {
-        return !waitList.isEmpty();
+        return !newClaimsQueue.isEmpty();
     }
 
     // EVENTS:
@@ -77,7 +80,7 @@ public class InMemoryWaitListService implements WaitListService {
     }
 
     private void tryConsume(Claim claim) {
-        if (consumePredicate.test(claim)) waitList.add(claim);
+        if (consumePredicate.test(claim)) newClaimsQueue.add(claim);
     }
 
     private void postponeClaim(Claim claim) {
