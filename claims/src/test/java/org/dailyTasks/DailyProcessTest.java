@@ -43,6 +43,7 @@ public class DailyProcessTest {
         List<Claim> input = SampleFromFile.with(SampleFromFile.SHORT_LIST);
         putNewClaimsOnEventBus(context.events, input);
 
+        // WHEN
         Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = runDailyUpdatesInALoop(context);
 
         // THEN
