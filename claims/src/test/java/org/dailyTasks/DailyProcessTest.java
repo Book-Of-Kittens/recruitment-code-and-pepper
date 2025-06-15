@@ -7,7 +7,6 @@ import org.events.EventType;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.events.EventTestUtils.putNewClaimsOnEventBus;
 
 public class DailyProcessTest {
-
-    private static final int BREAK_LOOP_LIMIT = 50;
 
     @Test
     public void testSingleDayOutput() {
@@ -44,7 +41,7 @@ public class DailyProcessTest {
         putNewClaimsOnEventBus(context.events, input);
 
         // WHEN
-        Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = runDailyProcessInALoop(context);
+        Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = DailyTasksTestUtils.runDailyProcessInALoop(context);
 
         // THEN
         for (Map.Entry<Integer, List<ClaimUpdatedEvent>> daySet : updatesByDay.entrySet()) {
@@ -57,20 +54,5 @@ public class DailyProcessTest {
         assertThat(allEvents).filteredOn(EventType.APPROVED.isOfType()).map(ClaimUpdatedEvent::claim).hasSameElementsAs(input);
     }
 
-    private Map<Integer, List<ClaimUpdatedEvent>> runDailyProcessInALoop(DailyProcessTestContext context) {
-        Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = new HashMap<>();
-        int day = 0;
-        boolean finished = false;
-        while (!finished) {
-
-            List<ClaimUpdatedEvent> dayEvents = DailyTasksTestUtils.runDay(context);
-
-            if (dayEvents.isEmpty()) finished = true;
-            updatesByDay.put(day, dayEvents);
-            day++;
-            if (day > BREAK_LOOP_LIMIT) finished = true;
-        }
-        return updatesByDay;
-    }
 
 }

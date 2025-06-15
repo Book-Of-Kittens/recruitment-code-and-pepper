@@ -8,11 +8,31 @@ import org.events.EventType;
 import org.rules.ClaimComparators;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DailyTasksTestUtils {
+
+    private static final int BREAK_LOOP_LIMIT = 50;
+
+    public static Map<Integer, List<ClaimUpdatedEvent>> runDailyProcessInALoop(DailyProcessTestContext context) {
+        Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = new HashMap<>();
+        int day = 0;
+        boolean finished = false;
+        while (!finished) {
+
+            List<ClaimUpdatedEvent> dayEvents = runDay(context);
+
+            if (dayEvents.isEmpty()) finished = true;
+            updatesByDay.put(day, dayEvents);
+            day++;
+            if (day > BREAK_LOOP_LIMIT) finished = true;
+        }
+        return updatesByDay;
+    }
 
     public static List<ClaimUpdatedEvent> runDay(DailyProcessTestContext context) {
         List<ClaimUpdatedEvent> updates = new ArrayList<>();
