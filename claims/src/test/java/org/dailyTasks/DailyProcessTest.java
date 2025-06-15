@@ -25,7 +25,8 @@ public class DailyProcessTest {
         List<ClaimUpdatedEvent> updates = new ArrayList<>();
         context.events.subscribe(updates::add);
         context.dailyProcessingService.run();
-        return updates;
+
+        return updates.stream().toList(); // WARNING: otherwise, the list will still be modified, for example, by updates!
     }
 
     @Test
@@ -64,7 +65,30 @@ public class DailyProcessTest {
             if (day > BREAK_LOOP_LIMIT) finished = true;
         }
         // THEN
-        System.out.println(updatesByDay.size());
+
+        for (Map.Entry<Integer, List<ClaimUpdatedEvent>> daySet : updatesByDay.entrySet()) {
+            prettyPrint(daySet.getKey(), daySet.getValue());
+
+            assertComplexityLimitNotExceeded(daySet.getValue());
+            assertProcessingOrder(daySet.getValue());
+        }
+
+    }
+
+    private void prettyPrint(Integer day, List<ClaimUpdatedEvent> updates) {
+
+        System.out.println("---- " + day + " -----");
+        List<ClaimUpdatedEvent> newClaims = updates.stream().filter(u -> EventType.NEW == u.eventType()).toList();
+        List<ClaimUpdatedEvent> approved = updates.stream().filter(u -> EventType.APPROVED == u.eventType()).toList();
+        List<ClaimUpdatedEvent> postponed = updates.stream().filter(u -> EventType.POSTPONED == u.eventType()).toList();
+
+        System.out.println("considered: " + updates.size() + " NEW: " + newClaims.size() + " APPROVED: " + approved.size() + " POSTPONED: " + postponed.size());
+
+        List<ClaimUpdatedEvent> medical = updates.stream().filter(u -> ClaimType.MEDICAL == u.claim().type()).toList();
+        List<ClaimUpdatedEvent> vehicle = updates.stream().filter(u -> ClaimType.VEHICLE == u.claim().type()).toList();
+        List<ClaimUpdatedEvent> property = updates.stream().filter(u -> ClaimType.PROPERTY == u.claim().type()).toList();
+
+        System.out.println("considered: MEDICAL: " + medical.size() + " VEHICLE: " + vehicle.size() + " PROPERTY: " + property.size());
 
     }
 
@@ -107,5 +131,4 @@ public class DailyProcessTest {
         List<Claim> claims = SampleFromFile.withDefaultData();
         claims.stream().map(claim -> new ClaimUpdatedEvent(claim, EventType.NEW)).forEach(events::raiseEvent);
     }
-
 }
