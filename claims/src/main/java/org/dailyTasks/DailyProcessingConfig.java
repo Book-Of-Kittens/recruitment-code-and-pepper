@@ -18,24 +18,14 @@ public class DailyProcessingConfig {
     }
 
     public static List<DailyTask> getDailyTasks(ResourcePersistence resourcePersistence, ClaimEventsBus events) {
-        ResourcesService resourcesService = new ResourcesService(events, resourcePersistence); /* doto: move */
+        ResourcesService resourcesService = new ResourcesService(events, resourcePersistence);
         ClaimApprovalService claimApprovalService = ClaimConfig.getClaimApprovalService(resourcesService, events);
         List<WaitListService> waitListServices = WaitListConfig.getWaitListServices(events);
 
-        DailyTask resourceRefresh = getDailyResourceRefreshTask(resourcesService);
-        DailyTask claimProcessing = new DailyClaimProcessingTask(waitListServices, claimApprovalService);/* TODO: simplify this service?*/
-        DailyTask waitListMaintenance = getDailyWaitListMaintenanceTask(waitListServices);
+        DailyTask resourceRefresh = new DailyResourceRefreshTask(resourcesService);
+        DailyTask claimProcessing = new DailyClaimProcessingTask(waitListServices, claimApprovalService);
+        DailyTask waitListMaintenance = new DailyWaitListMaintenanceTask(waitListServices);
         return List.of(resourceRefresh, claimProcessing, waitListMaintenance);
     }
 
-
-    public static DailyResourceRefreshTask getDailyResourceRefreshTask(ResourcesService resourcesService) {
-
-        return new DailyResourceRefreshTask(resourcesService);
-    }
-
-    public static DailyWaitListMaintenanceTask getDailyWaitListMaintenanceTask(List<WaitListService> waitListServices) {
-
-        return new DailyWaitListMaintenanceTask(waitListServices);
-    }
 }

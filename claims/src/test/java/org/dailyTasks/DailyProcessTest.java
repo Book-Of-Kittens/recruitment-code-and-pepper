@@ -3,11 +3,11 @@ package org.dailyTasks;
 import org.claims.Claim;
 import org.claims.ClaimType;
 import org.claims.ComplexityLevel;
+import org.claims.SampleFromFile;
 import org.events.ClaimEventsBus;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.junit.Test;
-import org.resources.SampleFromFile;
 import org.rules.ClaimComparators;
 
 import java.util.ArrayList;

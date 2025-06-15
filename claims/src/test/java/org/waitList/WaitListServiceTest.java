@@ -2,12 +2,12 @@ package org.waitList;
 
 import org.claims.Claim;
 import org.claims.ClaimType;
+import org.claims.SampleFromFile;
 import org.events.ClaimEventsBus;
 import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.events.EventsConfig;
 import org.junit.Test;
-import org.resources.SampleFromFile;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -24,11 +24,11 @@ public class ClaimComparators {
 
     // Partial:
     static Comparator<Claim> earlierDeadlineFirst() {
-        return Comparator.comparing(Claim::deadline); // TODO: check order
+        return Comparator.comparing(Claim::deadline);
     }
 
     static Comparator<Claim> smallerAmountFirst() {
-        return Comparator.comparing(Claim::amount); // TODO: check order
+        return Comparator.comparing(Claim::amount);
     }
 
     static Comparator<Claim> highComplexityFirst() {
