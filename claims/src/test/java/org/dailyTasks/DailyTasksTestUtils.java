@@ -7,6 +7,7 @@ import org.events.ClaimUpdatedEvent;
 import org.events.EventType;
 import org.rules.ClaimComparators;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class DailyTasksTestUtils {
         List<ClaimUpdatedEvent> processingChoiceEvents = allEvents.stream().filter(EventType.NEW.isOfType().negate()).toList();
 
         assertEachClaimConsideredOnlyOnce(processingChoiceEvents);
+        assertAmountLimitNotExceeded(processingChoiceEvents);
         assertComplexityLimitNotExceeded(processingChoiceEvents);
         assertProcessingOrder(processingChoiceEvents);
     }
@@ -55,20 +57,27 @@ public class DailyTasksTestUtils {
         assertThat(events).filteredOn(EventType.APPROVED.isOfType().or(EventType.POSTPONED.isOfType())).map(ClaimUpdatedEvent::claim).doesNotHaveDuplicates();
     }
 
-    private static void assertProcessingOrder(List<ClaimUpdatedEvent> updates) {
-        List<Claim> medicalClaims = updates.stream().filter(EventType.NEW.isOfType().negate()).map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.MEDICAL == c.type()).toList();
+    private static void assertProcessingOrder(List<ClaimUpdatedEvent> allUpdates) {
+        List<Claim> processedClaims = allUpdates.stream().filter(EventType.NEW.isOfType().negate()).map(ClaimUpdatedEvent::claim).toList();
+        List<Claim> medicalClaims = processedClaims.stream().filter(c -> ClaimType.MEDICAL == c.type()).toList();
         assertThat(medicalClaims).isSortedAccordingTo(ClaimComparators.forMedical());
 
-        List<Claim> vehicleClaims = updates.stream().filter(EventType.NEW.isOfType().negate()).map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.VEHICLE == c.type()).toList();
+        List<Claim> vehicleClaims = processedClaims.stream().filter(c -> ClaimType.VEHICLE == c.type()).toList();
         assertThat(vehicleClaims).isSortedAccordingTo(ClaimComparators.forVehicle());
 
-        List<Claim> propertyClaims = updates.stream().filter(EventType.NEW.isOfType().negate()).map(ClaimUpdatedEvent::claim).filter(c -> ClaimType.PROPERTY == c.type()).toList();
+        List<Claim> propertyClaims = processedClaims.stream().filter(c -> ClaimType.PROPERTY == c.type()).toList();
         assertThat(propertyClaims).isSortedAccordingTo(ClaimComparators.forProperty());
     }
 
     private static void assertComplexityLimitNotExceeded(List<ClaimUpdatedEvent> result) {
         List<ClaimUpdatedEvent> complexClaimsApprovals = result.stream().filter(EventType.APPROVED.isOfType()).filter(u -> u.claim().complexity() == ComplexityLevel.HIGH).toList();
         assertThat(complexClaimsApprovals).hasSizeLessThanOrEqualTo(2);
+    }
+
+    private static void assertAmountLimitNotExceeded(List<ClaimUpdatedEvent> result) {
+        List<ClaimUpdatedEvent> approvedClaims = result.stream().filter(EventType.APPROVED.isOfType()).toList();
+        BigDecimal sumOfClaimAmounts = approvedClaims.stream().map(ClaimUpdatedEvent::claim).map(Claim::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        assertThat(sumOfClaimAmounts).isLessThanOrEqualTo(BigDecimal.valueOf(15000L));
     }
 
     public static String forPrint(Claim claim) {

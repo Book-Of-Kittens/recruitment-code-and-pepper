@@ -30,7 +30,6 @@ public class WaitListServiceTest {
         List<WaitListService> waitListServices = WaitListConfig.getWaitListServices(events);
 
         List<Claim> claimList = SampleFromFile.with(SampleFromFile.LONG_LIST);
-        //    List<Claim> shortList = SampleFromFile.with(SampleFromFile.SHORT_LIST);
         putNewClaimsOnEventBus(events, claimList);
 
         assertThat(waitListServices.size()).isEqualTo(3);
