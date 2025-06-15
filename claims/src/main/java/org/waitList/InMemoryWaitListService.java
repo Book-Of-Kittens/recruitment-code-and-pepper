@@ -34,7 +34,11 @@ public class InMemoryWaitListService implements WaitListService {
 
     @Override
     public void placePostponedBackOnTheWaitList() {
-        postponed.forEach(this::tryConsume);
+        Iterator<Claim> iterator = postponed.iterator();
+        while (iterator.hasNext()) {
+            tryConsume(iterator.next());
+            iterator.remove();
+        }
     }
 
     @Override
@@ -51,7 +55,7 @@ public class InMemoryWaitListService implements WaitListService {
 
     private void onEvent(ClaimUpdatedEvent event) {
         if (EventType.APPROVED == event.eventType()) removeClaimIfProcessing(event.claim());
-        if (EventType.APPROVAL_POSTPONED == event.eventType()) postponeProcessedClaim(event.claim());
+        if (EventType.POSTPONED == event.eventType()) postponeProcessedClaim(event.claim());
         if (EventType.NEW == event.eventType()) tryConsume(event.claim()); // remember that all wait list get access to the same events!
     }
 

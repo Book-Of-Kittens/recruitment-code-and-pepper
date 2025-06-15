@@ -23,6 +23,6 @@ public class ClaimApprovalService {
         if (result)
             events.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVED));
         else
-            events.raiseEvent(new ClaimUpdatedEvent(claim, EventType.APPROVAL_POSTPONED));
+            events.raiseEvent(new ClaimUpdatedEvent(claim, EventType.POSTPONED));
     }
 }

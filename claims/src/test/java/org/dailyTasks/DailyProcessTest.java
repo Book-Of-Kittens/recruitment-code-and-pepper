@@ -11,16 +11,25 @@ import org.junit.Test;
 import org.rules.ClaimComparators;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DailyProcessTest {
 
-    /* TODO:test day by day */
+    private static final int BREAK_LOOP_LIMIT = 50;
+
+    private static List<ClaimUpdatedEvent> runDay(DailyProcessTestContext context) {
+        List<ClaimUpdatedEvent> updates = new ArrayList<>();
+        context.events.subscribe(updates::add);
+        context.dailyProcessingService.run();
+        return updates;
+    }
 
     @Test
-    public void testDailyProcessOutput() {
+    public void testSingleDayOutput() {
         // GIVEN
         DailyProcessTestContext context = new DailyProcessTestContext();
 
@@ -36,6 +45,27 @@ public class DailyProcessTest {
         assertComplexityLimitNotExceeded(updates);
         assertAllNewGotProcessed(updates);
         assertProcessingOrder(updates);
+    }
+
+    @Test
+    public void testMultipleDaysOutput() {
+        // GIVEN
+        DailyProcessTestContext context = new DailyProcessTestContext();
+        Map<Integer, List<ClaimUpdatedEvent>> updatesByDay = new HashMap<>();
+        populateWithExampleData(context.events);
+
+        int day = 0;
+        boolean finished = false;
+        while (!finished) {
+            List<ClaimUpdatedEvent> dayEvents = runDay(context);
+            if (dayEvents.isEmpty()) finished = true;
+            updatesByDay.put(day, dayEvents);
+            day++;
+            if (day > BREAK_LOOP_LIMIT) finished = true;
+        }
+        // THEN
+        System.out.println(updatesByDay.size());
+
     }
 
     private void assertProcessingOrder(List<ClaimUpdatedEvent> updates) {
@@ -77,4 +107,5 @@ public class DailyProcessTest {
         List<Claim> claims = SampleFromFile.withDefaultData();
         claims.stream().map(claim -> new ClaimUpdatedEvent(claim, EventType.NEW)).forEach(events::raiseEvent);
     }
+
 }

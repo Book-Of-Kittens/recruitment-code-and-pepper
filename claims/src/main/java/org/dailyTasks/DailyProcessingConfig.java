@@ -1,7 +1,7 @@
 package org.dailyTasks;
 
+import org.approval.ClaimApprovalConfig;
 import org.approval.ClaimApprovalService;
-import org.approval.ClaimConfig;
 import org.events.ClaimEventsBus;
 import org.resources.ResourcePersistence;
 import org.resources.ResourcesService;
@@ -19,7 +19,7 @@ public class DailyProcessingConfig {
 
     public static List<DailyTask> getDailyTasks(ResourcePersistence resourcePersistence, ClaimEventsBus events) {
         ResourcesService resourcesService = new ResourcesService(events, resourcePersistence);
-        ClaimApprovalService claimApprovalService = ClaimConfig.getClaimApprovalService(resourcesService, events);
+        ClaimApprovalService claimApprovalService = ClaimApprovalConfig.getClaimApprovalService(resourcesService, events);
         List<WaitListService> waitListServices = WaitListConfig.getWaitListServices(events);
 
         DailyTask resourceRefresh = new DailyResourceRefreshTask(resourcesService);

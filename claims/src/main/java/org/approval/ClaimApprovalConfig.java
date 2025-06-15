@@ -4,7 +4,7 @@ import org.events.ClaimEventsBus;
 import org.resources.ResourcesService;
 import org.rules.BusinessRulesConfiguration;
 
-public class ClaimConfig {
+public class ClaimApprovalConfig {
 
     public static ClaimApprovalService getClaimApprovalService(ResourcesService resourcesService, ClaimEventsBus events) {
 
