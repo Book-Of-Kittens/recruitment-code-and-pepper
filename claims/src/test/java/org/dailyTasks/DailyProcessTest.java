@@ -1,4 +1,4 @@
-package org.dailyProcessing;
+package org.dailyTasks;
 
 import org.claims.Claim;
 import org.claims.ClaimType;
@@ -15,12 +15,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DailyProcessingServiceTest {
+public class DailyProcessTest {
+
+    /* TODO:test day by day */
 
     @Test
     public void testDailyProcessOutput() {
         // GIVEN
-        DailyProcessingTestContext context = new DailyProcessingTestContext();
+        DailyProcessTestContext context = new DailyProcessTestContext();
 
         List<ClaimUpdatedEvent> updates = new ArrayList<>();
         context.events.subscribe(updates::add);
@@ -28,7 +30,7 @@ public class DailyProcessingServiceTest {
         populateWithExampleData(context.events);
 
         // WHEN
-        context.dailyProcessingService.processDay();
+        context.dailyProcessingService.run();
 
         // THEN
         assertComplexityLimitNotExceeded(updates);
