@@ -34,6 +34,15 @@ public class InMemoryWaitListService implements WaitListService {
 
     @Override
     public void placePostponedBackOnTheWaitList() {
+
+        /* TODO:
+        as per document content:
+        Należy przemyśleć, jak rozwiązać odkładanie i ponowne rozpatrywanie roszczeń, które nie zmieściły się w dziennym limicie.
+        and also:
+        Roszczenia, które nie mogą zostać przetworzone danego dnia (np. przekraczają budżet lub limit HIGH), należy odłożyć do kolejnego dnia, zachowując ich priorytety.
+
+         */
+
         Iterator<Claim> iterator = postponed.iterator();
         while (iterator.hasNext()) {
             tryConsume(iterator.next());

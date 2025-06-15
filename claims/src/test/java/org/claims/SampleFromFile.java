@@ -15,10 +15,11 @@ import java.util.stream.Stream;
 
 public class SampleFromFile {
 
-    public static final String DEFAULT_FILE = "/samples/claims.csv";
+    public static final String LONG_LIST = "/samples/claims.csv";
+    public static final String SHORT_LIST = "/samples/shortList.csv";
 
-    public static List<Claim> withDefaultData() {
-        URL samples = SampleFromFile.class.getResource(DEFAULT_FILE);
+    public static List<Claim> with(String file) {
+        URL samples = SampleFromFile.class.getResource(file);
         return getClaims(samples);
     }
 

@@ -4,8 +4,6 @@ import org.claims.Claim;
 import org.claims.ClaimType;
 import org.claims.SampleFromFile;
 import org.events.ClaimEventsBus;
-import org.events.ClaimUpdatedEvent;
-import org.events.EventType;
 import org.events.EventsConfig;
 import org.junit.Test;
 
@@ -13,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.events.EventTestUtils.putNewClaimsOnEventBus;
 
 public class WaitListServiceTest {
 
@@ -29,7 +28,10 @@ public class WaitListServiceTest {
     public void shouldWorkOnExampleData() {
         ClaimEventsBus events = EventsConfig.createEventBus();
         List<WaitListService> waitListServices = WaitListConfig.getWaitListServices(events);
-        populateWithExampleData(events);
+
+        List<Claim> claimList = SampleFromFile.with(SampleFromFile.LONG_LIST);
+        //    List<Claim> shortList = SampleFromFile.with(SampleFromFile.SHORT_LIST);
+        putNewClaimsOnEventBus(events, claimList);
 
         assertThat(waitListServices.size()).isEqualTo(3);
 
@@ -44,8 +46,4 @@ public class WaitListServiceTest {
         assertThat(propertyClaims).map(Claim::type).containsOnly(ClaimType.PROPERTY);
     }
 
-    private void populateWithExampleData(ClaimEventsBus events) {
-        List<Claim> claims = SampleFromFile.withDefaultData();
-        claims.stream().map(claim -> new ClaimUpdatedEvent(claim, EventType.NEW)).forEach(events::raiseEvent);
-    }
 }
